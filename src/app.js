@@ -1,20 +1,16 @@
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+// Require the necessary discord.js classes
+const { Client, Events, GatewayIntentBits } = require('discord.js');
+const  token  = process.env.DISCORD_TOKEN
 
-const todosRouter = require('./routes/todos');
+// Create a new client instance
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-const app = express();
+// When the client is ready, run this code (only once).
+// The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
+// It makes some properties non-nullable.
+client.once(Events.ClientReady, readyClient => {
+	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+});
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '..', 'public')));
-
-// Routes
-app.use('/todos', todosRouter);
-
-
-module.exports = app;
+// Log in to Discord with your client's token
+client.login(token);
